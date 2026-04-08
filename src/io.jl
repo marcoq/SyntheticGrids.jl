@@ -4,7 +4,7 @@ const GENDATAPATH = joinpath(dirname(@__FILE__), "..", "data", "Generator_data.d
 const GENJSONPATH = joinpath(dirname(@__FILE__), "..", "data", "GenData.json")
 
 function zipcode_builder(datapath = CENSUSPATH)
-    df = CSV.read(datapath, delim='\t')
+    df = CSV.read(datapath, DataFrame, delim='\t')
     zipcodes = Vector(undef, size(df, 1))
     for i in 1:size(df, 1)
         zip = [df[i, 1], df[i, 2], df[i, 8], df[i, 9]]
@@ -126,7 +126,7 @@ end
 function get_plant_data(coordpath=GENCOORDPATH)
     column_names = ["Grid Voltage (kV)", "Grid Voltage 2 (kV)", "Grid Voltage 3 (kV)"]
     column_types = Dict(Pair.(column_names, Float64))
-    df = CSV.read(coordpath, types=column_types)
+    df = CSV.read(coordpath, DataFrame, types=column_types)
     pcodes = sizehint!(Int[], size(df, 1))
     pcoords = sizehint!([], size(df, 1))
     pvolts = sizehint!([], size(df, 1))
@@ -169,7 +169,7 @@ function get_gen_data(
         "Time from Cold Shutdown to Full Load",
         "Status"
     ]
-    df = CSV.read(datapath)
+    df = CSV.read(datapath, DataFrame)
     tempdata = sizehint!([], size(df, 1))
     for i in 1:size(df, 1)
         gdata = []
@@ -381,6 +381,24 @@ end
 # 'Line'. The use of 'DC Line' is precluded by the fact that, in pandapower, it is only
 # capable of unidirectional flow.
 const SAFE_LOAD_PERCENT = 100 # Maximum load allowed at lines and transformers.
+function _require_pandapower()
+    if _pandapower_available[]
+        return nothing
+    end
+
+    try
+        copy!(pp, pyimport_conda("pandapower", "pandapower", "invenia"))
+        _pandapower_available[] = true
+    catch
+        error(
+            "pandapower is not available. Install it in the Python environment used by PyCall " *
+            "or run `using Conda; Conda.add(\"pandapower\")` before calling pandapower IO helpers."
+        )
+    end
+
+    return nothing
+end
+
 function add_line(pgrid::PyObject, b1::LoadBus, b2::LoadBus)
     pp.create_line(
         pgrid,
@@ -432,6 +450,7 @@ Currently, grid voltages and line properties are ignored. This function places a
 voltage values.
 """
 function to_pandapower(grid::Grid,)
+    _require_pandapower()
     LOAD_VOLT = 0.11 # mV, this is a crude approximation
     GEN_VOLT = 0.38 # mV, this is a crude approximation
     voltage(bus::LoadBus) = LOAD_VOLT
@@ -509,6 +528,7 @@ end
 Save a pandapower grid as `filename`. Pandapower requires `filename` to be a `.p` file.
 """
 function save_pp_grid(pgrid::PyObject, path::AbstractString)
+    _require_pandapower()
     pp.to_pickle(pgrid, path)
 end
 
@@ -518,6 +538,7 @@ end
 Load a pandapower grid from `path`.
 """
 function load_pp_grid(path)
+    _require_pandapower()
     return pycall(pp.from_pickle, PyObject,path)
 end
 

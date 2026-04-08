@@ -2,7 +2,7 @@
 
 [![stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://invenia.github.io/SyntheticGrids.jl/stable)
 [![latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://invenia.github.io/SyntheticGrids.jl/latest)
-[![Build Status](https://travis-ci.org/invenia/SyntheticGrids.jl.svg?branch=master)](https://travis-ci.org/invenia/SyntheticGrids.jl)
+[![CI](https://github.com/invenia/SyntheticGrids.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/invenia/SyntheticGrids.jl/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/invenia/SyntheticGrids.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/invenia/SyntheticGrids.jl)
 
 Power grid research requires testing in realistic, large-scale,  electric  networks.   However,  in  light  of  security threats,  most  information  on  the  actual  power  grids  is considered  sensitive  and  therefore  not  available  to  the general  public.   So  far,  most  power  transmission  studies have been carried using a few publicly available test grids.  Still,  these test grids are too small to capture the  complexity  of  real  grids.   With  this  in  mind,  there has recently been a strong concentrated effort in developing methodologies for building realistic synthetic grids, based only on publicly available information.  These synthetic grids are supposed to be based on some real example  and  to  present  analogous  properties  —  such  as geographic  load/generation  distribution,  total  load  and generator types — while not actually presenting potentially sensitive information about the real grid.
@@ -20,6 +20,10 @@ REFERENCES:
 * [Public Functions](https://invenia.github.io/SyntheticGrids.jl/latest/Functions.html)
 * [Private Functions](https://invenia.github.io/SyntheticGrids.jl/latest/Private.html)
 * [Model](https://invenia.github.io/SyntheticGrids.jl/latest/Model.html)
+
+## Maintenance workflow
+
+See [UPGRADING.md](UPGRADING.md) for the upgrade process used to keep Julia and package versions current.
 
 ## Current functionalities
 

@@ -6,6 +6,7 @@ ENV["NUMBA_DISABLE_JIT"] = 1
 
 using AutoHashEquals
 using CSV
+using DataFrames
 using Geodesy
 using JSON
 using LinearAlgebra
@@ -15,10 +16,16 @@ using SparseArrays
 using Statistics: Statistics, mean
 
 const pp = PyNULL()
+const _pandapower_available = Ref(false)
 
 # https://github.com/JuliaPy/PyCall.jl#using-pycall-from-julia-modules
 function __init__()
-    copy!(pp, pyimport_conda("pandapower", "pandapower==2.1.0", "invenia"))
+    try
+        copy!(pp, pyimport("pandapower"))
+        _pandapower_available[] = true
+    catch
+        _pandapower_available[] = false
+    end
 end
 
 export
